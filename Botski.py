@@ -4,7 +4,6 @@ import socket
 import os.path
 
 class Botski( object ):
-
     def __init__( self, debug=0 ):
         self.debug = debug
 
@@ -64,7 +63,7 @@ class Botski( object ):
         for key, value in channels.iteritems():
             if self.debug == 1:
                 print "JOIN " + key + " " + value
-            self.sock.send( bytes( "JOIN " + key + " " + value + "\n" ) )
+            self.sock.send( bytes( "JOIN " + key + " " + value + "\n" ) ) # This should call the sub above
 
     def read_sock( self ):
         while 1:
