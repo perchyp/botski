@@ -8,7 +8,9 @@ Channels are line-separated, and should contain a leading poundsign (#channel).
 If channels require a key, specify that by using, #channel:key
 
 # A Note
-This project is a learning exercise. For that reason, botski does it's own file ops and parsing, rather than using Python built-ins.
+This project is a learning exercise. For that reason, botski does its own file ops and parsing, rather than using Python built-ins.
 
 # What's Next
 The script is in dire need of error handling and sanity checking, especially where users are expected to provide input. Additionally, the main while loop that reads the socket likely needs to be put into a try/except pattern.
+
+After these (more serious) fixes are in place, a dispatch table will be built in order to respond to incoming commands.
