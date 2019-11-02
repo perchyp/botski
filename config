@@ -1,4 +1,5 @@
 nick=nito
 user=gravelord 8 * : Gravelord Nito
-server=irc.efnet.org
+server=127.0.0.1
 port=6667
+log_file=botski.log
