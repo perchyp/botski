@@ -21,6 +21,7 @@ class Botski( object ):
         self.nick   = conf_values[ 'nick' ].rstrip()
         self.port   = conf_values[ 'port' ].rstrip()
         self.port   = int( self.port ) # We have to do this for socket not to complain
+        self.log_file = conf_values[ 'log_file' ].rstrip()
 
         if self.debug:
             print "[DEBUG] Nick: "   + self.nick
@@ -37,11 +38,82 @@ class Botski( object ):
 
     def join_channel( self, channel, *key ):
         if key:
-            self.sock.send( bytes( "JOIN " + channel + " " + key ) )
+            self.sock.send( bytes( "JOIN " + channel + " " + key + "\n" ) )
         else:
-            self.sock.send( bytes( "JOIN " + channel ) )
+            self.sock.send( bytes( "JOIN %s\n" % channel ) )
 
-    def do_joins( self, f_channels='./channels' ):
+    def version( self ):
+        # Returns server version
+        self.sock.send( bytes( "VERSION\n" ) )
+
+    def info( self ):
+        # Returns server info 
+        self.sock.send( bytes( "INFO\n" ) )
+
+    def admin( self ):
+        # Instructs the server to return information about the administrators 
+        self.sock.send( bytes( "ADMIN\n" ) )
+
+    def stats( self ):
+        # Returns statistics about the current server
+        self.sock.send( bytes( "STATS\n" ) )
+ 
+    def motd( self ):
+        # Returns the MOTD
+        self.sock.send( bytes( "MOTD\n" ) )
+
+    def names( self, *channel ):
+        # Returns a list of who is on
+        if channel:
+            self.sock.send( bytes( "NAMES %s\n" % channel ) )
+        else:
+            self.sock.send( bytes( "NAMES\n") )
+
+    def whois( self, nick ):
+        # Returns whois information a nick
+        self.sock.send( bytes( "WHOIS "+ nick + "\n") )
+
+    def lusers( self ):
+        # Returns statistics about the size of the network.
+        self.sock.send( bytes( "LUSERS\n" ) )
+
+    def servlist( self ) :
+        # Lists the services currently on the network.
+        self.sock.send( bytes( "SERVLIST\n" ) )
+  
+    def list( self ):
+        # Lists all channels on the server.
+        self.sock.send( bytes( "LIST\n" ) )
+
+    def time( self ):
+        # Returns the local time on the current server.
+        self.sock.send( bytes( "TIME\n" ) )
+
+    def uhnames( self ):
+        # Instructs the server to send names in an RPL_NAMES reply in the long format:
+        # This command is not formally defined in an RFC, but is recognized by most major IRC daemons.
+        self.sock.send( bytes( "UHNAMES\n" ) )
+
+    def userip( self ):
+        # Requests the direct IP address of the user with the specified nickname.
+        # This command is not formally defined in an RFC, but is recognized by most major IRC daemons.
+        self.sock.send( bytes( "USERIP\n" ) )
+
+    def userhost( self ):
+        # Returns a list of information about the nicknames specified.
+        # This command is not formally defined in an RFC, but is recognized by most major IRC daemons.
+        self.sock.send( bytes( "USERHOST\n" ) )
+
+    def rules( self ):
+        # Requests the server rules. 
+        # This command is not formally defined in an RFC, but is recognized by most major IRC daemons.
+        self.sock.send( bytes( "RULES\n" ) )
+    
+    #def ison( self, nicknames ):
+        # Queries for a space-separated list <nicknames> to see if they are on server
+        #self.sock.send( bytes( "ISON " + " ".join(nicknames) )
+
+    def do_config_joins( self, f_channels='./channels' ):
         channels = {}
 
         if os.path.isfile( f_channels ) and os.stat( f_channels ).st_size > 0: # These checks could probably be better...
@@ -75,10 +147,34 @@ class Botski( object ):
 
             msg = str.split( str( data ) )
             if msg[0] == "PING":
-                self.sock.send( bytes( "PONG: %s" %msg[1] + "\n" ) )
+                self.sock.send( bytes( "PONG: %s" % msg[1] + "\n" ) )
 
 bot = Botski( debug = 1 ) 
 bot.load_config('./config' ) # Probably auto define this later or allow optional specification of a new config with assumed value of ./config 
 bot.setup_sock()
-bot.do_joins()
+# We should do recon before we do our joins
+# list users online and do a whois on them
+bot.join_channel("#TheName")
+bot.join_channel("#TheGame")
+#bot.info()
+#bot.admin()
+#bot.lusers()
+#bot.version()
+#bot.stats()
+bot.names()
+bot.names("#TheGame")
+#bot.uhnames()
+#bot.time()
+#bot.list()
+#bot.whois("nito")
+#bot.rules()
+# list channels, we might want to join them
+
+# This is a command that joins channels from a config file.
+#bot.do_config_joins()
+
+#Join channels not already in your config
+
+# listen to the channels and record conversations
+
 bot.read_sock()
